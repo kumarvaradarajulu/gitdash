@@ -3,24 +3,23 @@ class BaseFilter(object):
     BaseFilter to apply filters on Repo/PullRequest objects.
     """
 
-    def __init__(self, obj, filter_str=''):
+    def __init__(self, filter_str=''):
         """
 
         Args:
-            obj (Repo or PullRequest): Filter object either repo or PR
             filter_str (str): Filter string to
         """
-        self.obj = obj
         self.filter_str = filter_str.lower()
 
     @property
     def filter_on(self):
         raise NotImplemented
 
-    def __call__(self, wildcard=None, *args, **kwargs):
+    def __call__(self, obj, wildcard=False, *args, **kwargs):
         """
 
         Args:
+            obj (Repo or PullRequest): Filter object either repo or PR
             wildcard(bool): Boolean representing if a wildcard match is to be done or not.
             *args:
             **kwargs:
@@ -29,6 +28,8 @@ class BaseFilter(object):
             bool: True or False based on the filter
 
         """
+        self.obj = obj
+
         if wildcard:
             return self.filter_str in self.filter_on
         else:
