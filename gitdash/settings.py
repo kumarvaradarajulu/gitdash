@@ -1,6 +1,6 @@
 import os
 
-BASE_URL = 'https://github.com'
+BASE_URL = 'https://api.github.com'
 
 REPO_FILTERS = []
 PR_FILTERS = []

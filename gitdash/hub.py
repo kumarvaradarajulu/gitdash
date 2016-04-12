@@ -18,10 +18,13 @@ logger = logging.getLogger(__name__)
 NotSet = github.GithubObject.NotSet
 
 
-class ExtendedGithub(github.Github):
+class Github(github.Github):
     """
 
     """
+    def __init__(self, *args, **kwargs):
+        super(Github, self).__init__(*args, **kwargs)
+
     def get_user_repos(self, user=NotSet, since=NotSet):
         """
         :calls: `GET /repositories <http://developer.github.com/v3/repos/#list-all-public-repositories>`_
@@ -39,7 +42,7 @@ class ExtendedGithub(github.Github):
         return github.PaginatedList.PaginatedList(
             github.Repository.Repository,
             self.__requester,
-            "users/{}/repositories".format(user),
+            "/users/{}/repos".format(user),
             url_parameters
         )
 
@@ -113,7 +116,7 @@ class RepoDash(object):
         assert ghub is None and (repo is not None or user_or_token is not None), "User ID or Token must be provided."
         assert repo or repo_url, "Repo object or Repo url must be provided."
         if not repo:
-            self.ghub = ghub and ghub or ExtendedGithub(user_or_token, password, base_url=settings.BASE_URL)
+            self.ghub = ghub and ghub or github.Github(user_or_token, password, base_url=settings.BASE_URL)
         self.repo = repo and repo or ghub.get_repo(repo_url)
         self.pr_filter = pr_filter
         self.cmd = cmd
@@ -129,8 +132,6 @@ class RepoDash(object):
         pulls = [PRDash(pull, self.repo) for pull in self.repo.get_pulls(state=self.state)]
         if self.pr_filter:
             pulls = filter(self.pr_filter, pulls)
-        else:
-            pulls = self.repo.get_pulls(state=self.state)
 
         return pulls
 
@@ -157,7 +158,9 @@ class DashBoard(object):
 
         """
         assert user_or_token is not None, "User ID or access token must be provided"
-        self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.BASE_URL)
+        #self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.BASE_URL)
+        self.ghub = Github(user_or_token, password, base_url=settings.BASE_URL)
+        user = self.ghub.get_user().login
         self.repo_filter = repo_filter
         self.pr_filter = pr_filter
         self.state = state
@@ -167,7 +170,8 @@ class DashBoard(object):
 
     @property
     def repos_func(self):
-        return self.org and partial(self.ghub.get_org_repos, org=self.org) or self.user and partial(self.ghub.get_user_repos, user=self.user) or self.ghub.get_user_repos
+        return self.ghub.get_user_repos
+        # return self.org and partial(self.ghub.get_org_repos, org=self.org) or self.user and partial(self.ghub.get_user_repos, user=self.user) or self.ghub.get_user_repos
 
     @property
     def repos(self):
