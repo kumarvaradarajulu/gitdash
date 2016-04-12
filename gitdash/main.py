@@ -1,7 +1,9 @@
+from hub import DashBoard
+
+
 def main():
-    pass
+    DashBoard().dash()
 
 
 if __name__ == '__main__':
     main()
-

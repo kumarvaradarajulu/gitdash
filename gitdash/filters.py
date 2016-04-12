@@ -61,7 +61,7 @@ class LabelFilter(PRFilter):
 
         """
 
-        return self.obj.pr.labels
+        return self.obj.labels
 
     def __call__(self, wildcard=None, *args, **kwargs):
         """
