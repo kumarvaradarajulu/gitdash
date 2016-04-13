@@ -3,19 +3,20 @@ class BaseFilter(object):
     BaseFilter to apply filters on Repo/PullRequest objects.
     """
 
-    def __init__(self, filter_str=''):
+    def __init__(self, filter_value='', wildcard=False):
         """
 
         Args:
-            filter_str (str): Filter string to
+            filter_value (str or sequence or int): Filter string to
         """
-        self.filter_str = filter_str.lower()
+        self.filter_value = isinstance(filter_value, str) and filter_value.lower() or filter_value
+        self.wildcard = wildcard
 
     @property
     def filter_on(self):
         raise NotImplemented
 
-    def __call__(self, obj, wildcard=False, *args, **kwargs):
+    def __call__(self, obj, *args, **kwargs):
         """
 
         Args:
@@ -30,10 +31,10 @@ class BaseFilter(object):
         """
         self.obj = obj
 
-        if wildcard:
-            return self.filter_str in self.filter_on
+        if self.wildcard:
+            return self.filter_value in self.filter_on
         else:
-            return self.filter_str == self.filter_on
+            return self.filter_value == self.filter_on
 
 
 class PRFilter(BaseFilter):
@@ -51,6 +52,21 @@ class PRFilter(BaseFilter):
         return self.obj.pr.title.lower()
 
 
+class PRNumberFilter(BaseFilter):
+    """
+    Filter to apply filters on PR. Filters title based on filter string
+    """
+    @property
+    def filter_on(self):
+        """
+
+        Returns:
+
+        """
+
+        return self.obj.pr.number
+
+
 class LabelFilter(PRFilter):
 
     @property
@@ -63,19 +79,22 @@ class LabelFilter(PRFilter):
 
         return self.obj.labels
 
-    def __call__(self, wildcard=None, *args, **kwargs):
+    def __call__(self, obj, *args, **kwargs):
         """
 
         Args:
-            wildcard:
             *args:
             **kwargs:
 
         Returns:
 
         """
-        if isinstance(self.filter_str, (list, tuple)):
-            return all([label in self.filter_on for label in self.filter_str])
+        self.obj = obj
+        filter_on = self.filter_on
+        if isinstance(self.filter_value, (list, tuple)):
+            return all([label in filter_on for label in self.filter_value])
+        else:
+            return self.filter_value in filter_on
 
 
 class MileStoneFilter(PRFilter):

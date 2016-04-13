@@ -170,8 +170,8 @@ class DashBoard(object):
 
     @property
     def repos_func(self):
-        return self.ghub.get_user_repos
-        # return self.org and partial(self.ghub.get_org_repos, org=self.org) or self.user and partial(self.ghub.get_user_repos, user=self.user) or self.ghub.get_user_repos
+        # return self.ghub.get_user_repos
+        return self.org and partial(self.ghub.get_org_repos, org=self.org) or self.user and partial(self.ghub.get_user_repos, user=self.user) or self.ghub.get_user_repos
 
     @property
     def repos(self):
@@ -183,7 +183,14 @@ class DashBoard(object):
         """
 
         if self.repo_filter:
-            return filter(self.repo_filter, self.repos_func())
+            repos = self.repos_func()
+            if isinstance(self.repo_filter, (list, tuple)):
+                for repo_filter in self.repo_filter:
+                    repos = filter(repo_filter, repos)
+            else:
+                repos = filter(self.repo_filter, repos)
+
+            return repos
         else:
             return self.repos_func()
 
