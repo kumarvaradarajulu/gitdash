@@ -1,4 +1,5 @@
-import prboard.constants as constants
+# import prboard.constants as constants
+import constants
 
 
 def parse_pr_filters(filter_str):
@@ -18,7 +19,7 @@ def parse_pr_filters(filter_str):
 
     """
     filter_mappings = constants.FILTER_COMMAND_MAPPING
-    filts = filter_str.split(',')
+    filts = filter(lambda x: x!= "", filter_str.split(','))
     filter_objects = []
     for f in filts:
         try:

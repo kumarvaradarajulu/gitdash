@@ -11,7 +11,7 @@ import github.PaginatedList
 import github.Repository
 
 
-import prboard.settings as settings
+import settings
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,6 @@ class Github(github.Github):
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Repository.Repository`
         """
         assert since is NotSet or isinstance(since, (int, long)), since
-        assert user is NotSet or isinstance(user, str), "User name must be a string"
 
         user = user == NotSet and self.get_user().login or user
 
@@ -130,8 +129,12 @@ class RepoDash(object):
 
         """
         pulls = [PRDash(pull, self.repo) for pull in self.repo.get_pulls(state=self.state)]
-        if self.pr_filter:
-            pulls = filter(self.pr_filter, pulls)
+        pr_filter = self.pr_filter
+        if isinstance(pr_filter, (list, tuple)):
+            for f in pr_filter:
+                pulls = filter(f, pulls)
+        else:
+            pulls = filter(pr_filter, pulls)
 
         return pulls
 
@@ -148,30 +151,29 @@ class RepoDash(object):
                 return pr.dash()
 
 
-class DashBoard(object):
+class OrgUserDashBoard(object):
     """
     Dashboard class all repos on an organization
     """
-    def __init__(self, user_or_token=settings.DEFAULT_GITHUB_USERNAME, password=settings.DEFAULT_GITHUB_PASSWORD, repo_filter=None,
-                 pr_filter=None, state=NotSet, cmd=True, **kwargs):
+    def __init__(self, dashboard=None, org=None, **kwargs):
         """
 
         """
-        assert user_or_token is not None, "User ID or access token must be provided"
-        #self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
-        self.ghub = Github(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
+        assert dashboard
+        self.ghub = dashboard.ghub
+        self.dashboard = dashboard
         user = self.ghub.get_user().login
-        self.repo_filter = repo_filter
-        self.pr_filter = pr_filter
-        self.state = state
-        self.cmd = cmd
-        self.org = kwargs.get('org', settings.DEFAULT_ORG)
-        self.user = kwargs.get('user')
+        self.repo_filter = dashboard.repo_filter
+        self.pr_filter = dashboard.pr_filter
+        self.state = dashboard.state
+        self.cmd = dashboard.cmd
+        self.org = org
+        self.repouser = dashboard.repouser
 
     @property
     def repos_func(self):
         # return self.ghub.get_user_repos
-        return self.org and partial(self.ghub.get_org_repos, org=self.org) or self.user and partial(self.ghub.get_user_repos, user=self.user) or self.ghub.get_user_repos
+        return self.org and partial(self.ghub.get_org_repos, org=self.org) or self.repouser and partial(self.ghub.get_user_repos, user=self.repouser) or self.ghub.get_user_repos
 
     @property
     def repos(self):
@@ -197,3 +199,35 @@ class DashBoard(object):
     def dash(self):
         for repo in self.repos:
             RepoDash(repo=repo, pr_filter=self.pr_filter, state=self.state, cmd=self.cmd).produce_dash()
+
+
+class DashBoard(object):
+    """
+
+    """
+    def __init__(self, user_or_token=settings.DEFAULT_GITHUB_USERNAME, password=settings.DEFAULT_GITHUB_PASSWORD, repo_filter=None,
+                 pr_filter=None, state=NotSet, cmd=True, **kwargs):
+        """
+
+        """
+        assert user_or_token is not None, "User ID or access token must be provided"
+        # self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
+        self.ghub = Github(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
+        user = self.ghub.get_user().login
+        self.repo_filter = repo_filter
+        self.pr_filter = pr_filter
+        self.state = state
+        self.cmd = cmd
+        self.org = kwargs.get('org')
+        self.repouser = kwargs.get('repouser')
+
+    def dash(self):
+        orgs = self.org
+        if orgs:
+            if isinstance(orgs, (list, tuple)):
+                for org in orgs:
+                    OrgUserDashBoard(dashboard=self, org=org).dash()
+            else:
+                OrgUserDashBoard(dashboard=self, org=orgs).dash()
+        else:
+            OrgUserDashBoard(dashboard=self).dash()

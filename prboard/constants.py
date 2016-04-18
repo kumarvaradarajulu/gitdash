@@ -1,6 +1,7 @@
 from functools import partial
 
-import prboard.filters as filters
+# import prboard.filters as filters
+import filters
 
 
 class State(object):
