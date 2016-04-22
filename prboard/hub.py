@@ -12,6 +12,7 @@ import github.Repository
 
 
 import settings
+from utils import PrintPR
 
 
 logger = logging.getLogger(__name__)
@@ -88,7 +89,7 @@ class PRDash(object):
         """
         return [label.name for label in self.repo.get_issue(self.pr.number).labels]
 
-    def dash(self):
+    def dash(self, detailed_mode):
         """
 
         Returns:
@@ -96,12 +97,12 @@ class PRDash(object):
         """
         pass
 
-    def print_dash(self):
+    def print_dash(self, detailed_mode):
         """
 
         """
         pr = self.pr
-        print pr.number, pr.title, pr.state, pr.comments
+        PrintPR(pr, self.repo).print_output()
 
 
 class RepoDash(object):
@@ -138,7 +139,7 @@ class RepoDash(object):
 
         return pulls
 
-    def produce_dash(self):
+    def produce_dash(self, detailed_mode):
         """
 
         Returns:
@@ -146,9 +147,9 @@ class RepoDash(object):
         """
         for pr in self.prs:
             if self.cmd:
-                pr.print_dash()
+                pr.print_dash(detailed_mode)
             else:
-                return pr.dash()
+                return pr.dash(detailed_mode)
 
 
 class OrgUserDashBoard(object):
@@ -169,6 +170,7 @@ class OrgUserDashBoard(object):
         self.cmd = dashboard.cmd
         self.org = org
         self.repouser = dashboard.repouser
+        self.detailed_mode = dashboard.detailed_mode
 
     @property
     def repos_func(self):
@@ -198,7 +200,7 @@ class OrgUserDashBoard(object):
 
     def dash(self):
         for repo in self.repos:
-            RepoDash(repo=repo, pr_filter=self.pr_filter, state=self.state, cmd=self.cmd).produce_dash()
+            RepoDash(repo=repo, pr_filter=self.pr_filter, state=self.state, cmd=self.cmd).produce_dash(self.detailed_mode)
 
 
 class DashBoard(object):
@@ -220,6 +222,7 @@ class DashBoard(object):
         self.cmd = cmd
         self.org = kwargs.get('org')
         self.repouser = kwargs.get('repouser')
+        self.detailed_mode = kwargs.get('detailed_mode', False)
 
     def dash(self):
         orgs = self.org

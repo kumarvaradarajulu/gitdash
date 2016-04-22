@@ -1,8 +1,10 @@
 import argparse
+import logging
 import six
 
 from github import GithubObject
 
+from prboard import __version__
 from hub import DashBoard
 # import prboard.filters as filters
 # import prboard.settings as settings
@@ -10,6 +12,17 @@ from hub import DashBoard
 import settings
 import filters
 from utils import parse_pr_filters
+
+logging.basicConfig(level=logging.ERROR)
+log = logging.getLogger('')
+logging.getLogger('sh').setLevel(logging.ERROR)
+
+VERBOSITY_MAPPING = {
+    0: logging.ERROR,
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG,
+}
 
 parser = argparse.ArgumentParser('')
 parser.add_argument(
@@ -83,6 +96,14 @@ parser.add_argument(
          "By PR Title  ---->  etitle:pr_title  (exact match)"
          "By PR All    ---->  num:123,labels:label1;label2;label3,title:pr_title"
 )
+
+parser.add_argument('-v', '--verbose',
+                    action='count',
+                    default=0,
+                    help='Control verbosity level. Can be supplied multiple times to increase verbosity level', )
+
+parser.add_argument('-V', '--version', action='version', version='%(prog)s v' + __version__,
+                    help='To know prboard version number', )
 
 
 def main():
