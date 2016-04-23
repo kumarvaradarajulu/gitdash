@@ -28,6 +28,7 @@ setup(
         'argparse',
         'PyGithub',
         'six',
+        'mock',
     ],
     entry_points={
         'console_scripts': [

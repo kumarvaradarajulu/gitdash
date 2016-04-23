@@ -14,7 +14,7 @@ class BaseFilter(object):
 
     @property
     def filter_on(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def __call__(self, obj, *args, **kwargs):
         """
@@ -122,7 +122,7 @@ class MileStoneFilter(PRFilter):
         Returns:
 
         """
-        return self.obj.milestone.lower()
+        return self.obj.pr.milestone.lower()
 
 
 class RepoFilter(BaseFilter):

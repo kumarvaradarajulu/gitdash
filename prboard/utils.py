@@ -11,10 +11,10 @@ def parse_pr_filters(filter_str):
     """
     Function to parse PR filter specified.
         "By PR Number ---->  num:123"
-        "By PR Labels ---->  labels:label1,label2,label3"
+        "By PR Labels ---->  labels:label1;label2;label3"
         "By PR Title  ---->  title:pr_title   (wilcard match)"
         "By PR Title  ---->  etitle:pr_title  (exact match)"
-        "By PR All    ---->  num:123,labels:label1,label2,label3,title:pr_title"
+        "By PR All    ---->  num:123,labels:label1;label2;label3,title:pr_title"
 
     Args:
         filter_str (str): Filter String to be parsed
@@ -29,6 +29,9 @@ def parse_pr_filters(filter_str):
     for f in filts:
         try:
             cmd, value = f.split(':')
+            # If ; is present in the value it could be another list of values so overload it
+            if ";" in value:
+                value = value.split(";")
             filter_class = filter_mappings[cmd]
             filter_objects.append(filter_class(filter_value=value))
         except (ValueError, KeyError):
