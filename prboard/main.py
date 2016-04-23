@@ -4,14 +4,14 @@ import six
 
 from github import GithubObject
 
-from prboard import __version__
+import prboard
 from hub import DashBoard
 # import prboard.filters as filters
 # import prboard.settings as settings
 # from prboard.utils import parse_pr_filters
 import settings
 import filters
-from utils import parse_pr_filters
+from utils import parse_pr_filters, overload_settings_from_file
 
 logging.basicConfig(level=logging.ERROR)
 log = logging.getLogger('')
@@ -24,10 +24,12 @@ VERBOSITY_MAPPING = {
     3: logging.DEBUG,
 }
 
+overload_settings_from_file()
+
 parser = argparse.ArgumentParser('')
 parser.add_argument(
     "-b", "--baseurl",
-    default=settings.DEFAULT_ORG,
+    default=settings.PRBOARD_ORG,
     dest="org",
     type=six.text_type,
     help="Github base url to be used."
@@ -35,7 +37,7 @@ parser.add_argument(
 
 parser.add_argument(
     "-o", "--org",
-    default=settings.DEFAULT_ORG,
+    default=settings.PRBOARD_ORG,
     dest="org",
     type=six.text_type,
     help="Organization name to be checked. This is applicable for enterprise users. "
@@ -44,7 +46,7 @@ parser.add_argument(
 
 parser.add_argument(
     "-r", "--repo",
-    default=settings.DEFAULT_REPO_FILTER,
+    default=settings.PRBOARD_REPO_FILTER,
     dest="repos",
     type=six.text_type,
     help="Repo names to be filtered. Provide comma separated multiple repos"
@@ -60,7 +62,7 @@ parser.add_argument(
 
 parser.add_argument(
     "-u", "--user",
-    default=settings.DEFAULT_GITHUB_USERNAME,
+    default=settings.PRBOARD_GITHUB_USERNAME,
     dest="username",
     type=six.text_type,
     help="User name to login to Github. Default is picked from settings.DEFAULT_GITHUB_USER"
@@ -68,7 +70,7 @@ parser.add_argument(
 
 parser.add_argument(
     "-ru", "--repouser",
-    default=settings.DEFAULT_GITHUB_USERNAME,
+    default=settings.PRBOARD_GITHUB_USERNAME,
     dest="repouser",
     type=six.text_type,
     help="User name on Github for which the dashboard must be checked. "
@@ -78,15 +80,15 @@ parser.add_argument(
 
 parser.add_argument(
     "-p", "--password",
-    default=settings.DEFAULT_GITHUB_PASSWORD,
+    default=settings.PRBOARD_GITHUB_PASSWORD,
     dest="password",
     type=six.text_type,
-    help="Password to login to Github. Default is picked from settings.DEFAULT_GITHUB_PASSWORD"
+    help="Password to login to Github. Default is picked from settings.PRBOARD_GITHUB_PASSWORD"
 )
 
 parser.add_argument(
     "-pr", "--pull",
-    default=settings.DEFAULT_REPO_FILTER,
+    default=settings.PRBOARD_REPO_FILTER,
     dest="pull",
     type=six.text_type,
     help="Filter Pull requests, with the following criteria"
@@ -97,12 +99,20 @@ parser.add_argument(
          "By PR All    ---->  num:123,labels:label1;label2;label3,title:pr_title"
 )
 
+parser.add_argument(
+    "-d", "--detailed_mode",
+    default=settings.PRBOARD_DETALED_MODE,
+    dest="detailed_mode",
+    type=bool,
+    help="Option to control output mode. If Detailed mode is set each PR and it's comments is displayed"
+)
+
 parser.add_argument('-v', '--verbose',
                     action='count',
                     default=0,
                     help='Control verbosity level. Can be supplied multiple times to increase verbosity level', )
 
-parser.add_argument('-V', '--version', action='version', version='%(prog)s v' + __version__,
+parser.add_argument('-V', '--version', action='version', version='%(prog)s v' + prboard.__version__,
                     help='To know prboard version number', )
 
 
@@ -121,6 +131,9 @@ def main():
     if args.pull:
         pr_filters = parse_pr_filters(args.pull)
         kwargs['pr_filter'] = pr_filters
+    if args.detailed_mode:
+        kwargs['detailed_mode'] = args.detailed_mode
+
     DashBoard(**kwargs).dash()
 
 if __name__ == '__main__':

@@ -1,5 +1,10 @@
 # import prboard.constants as constants
 import constants
+import settings
+import logging
+
+log = logging.getLogger("")
+colors = constants.Colors
 
 
 def parse_pr_filters(filter_str):
@@ -32,8 +37,28 @@ def parse_pr_filters(filter_str):
     return filter_objects
 
 
+def overload_settings_from_file():
+    if not settings.PRBOARD_SETTINGS_FILE:
+        return
+    try:
+        with open(settings.PRBOARD_SETTINGS_FILE, 'r') as settings_file:
+            for line in settings_file.read().splitlines():
+                try:
+                    config_name, config_value = line.split('=')
+                    if config_name == 'PRBOARD_SETTINGS_FILE':
+                        # Do not let settings file to be overridden. It could be a disaster
+                        continue
+                    setattr(settings, config_name, config_value)
+                except ValueError:
+                    # Ignore if config was not properly setup
+                    continue
+    except IOError as e:
+        # Log any IO errors
+        log.warning("Unable to access settings file={}, error={}".format(settings.PRBOARD_SETTINGS_FILE, e.message))
+
+
 class PrintPR(object):
-    def __init__(self, pr, repo, detailed_mode=False):
+    def __init__(self, pr, repo, detailed_mode=False, labels=[]):
         self.pr = pr
         self.repo = repo
         self.prnum = pr.number
@@ -41,6 +66,10 @@ class PrintPR(object):
         self.comments = pr.comments
         self.state = pr.state
         self.detailed_mode = detailed_mode
+        self.html_url = pr.html_url
+        self.milestone = colors.ENDC + colors.OKBLUE + pr.milestone + colors.ENDC if pr.milestone else colors.FAIL + "No Milestone" + colors.ENDC
+        self.assignee = colors.OKBLUE  + pr.assignee + colors.ENDC if pr.assignee else colors.FAIL + "Not Assigned" + colors.ENDC
+        self.labels = colors.OKBLUE + ":".join(labels) + colors.ENDC if labels else colors.FAIL + "No Labels" + colors.ENDC
 
     def print_output(self):
         if self.detailed_mode:
@@ -50,14 +79,35 @@ class PrintPR(object):
 
     def print_summary(self):
         colors = constants.Colors
-        print colors.BOLD + str(self.prnum).ljust(6) + ' ' + self.title[:50].ljust(50) + ' ' + colors.FAIL + str(self.comments) + ' comment(s)' + colors.ENDC
+        print colors.BOLD + str(self.prnum).ljust(6) + ' ' + self.title[:50].ljust(50) + ' ' + colors.FAIL + str(self.comments) + ' comment(s) {}'.format(self.html_url) + colors.ENDC + self.html_url
 
     def print_detailed_output(self):
-        colors = constants.Colors
-        print colors.HEADER + str(self.prnum).ljust(6) + ' ' + self.title[:100]
-        print colors.WARNING + '=' * 50 + colors.ENDC
+        hindent = 4
+        bindent = 11
+        pr_header = "{} {} (mile={},assigne={},lables={}) {}".format(str(self.prnum).ljust(6), self.title[:100], self.milestone, self.assignee, self.labels, self.html_url)
+        print_header(pr_header, sep="", indent=hindent)
         if self.comments:
             for comment in self.pr.get_issue_comments():
-                print colors.BOLD + '{}@@{}:::'.format(comment.user.login, str(comment.updated_at)).ljust(40) + colors.ENDC + comment.body
+                prefix = bindent*" " + colors.BOLD + '{}@@{}:::'.format(comment.user.login, str(comment.updated_at)).ljust(40) + colors.ENDC
+                print prefix + comment.body + ' {}'.format(comment.html_url)
         else:
-            print "No comments"
+            print bindent*" " + "No comments"
+
+
+def print_header(text, sep="=", indent=0):
+    """
+
+    Args:
+        text:
+        sep:
+
+    Returns:
+
+    """
+    if sep:
+        print sep * len(text)
+
+    print indent*" " + colors.HEADER + text + colors.ENDC
+
+    if sep:
+        print sep * len(text)

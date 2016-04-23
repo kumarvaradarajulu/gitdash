@@ -12,7 +12,7 @@ import github.Repository
 
 
 import settings
-from utils import PrintPR
+from utils import PrintPR, print_header
 
 
 logger = logging.getLogger(__name__)
@@ -101,8 +101,7 @@ class PRDash(object):
         """
 
         """
-        pr = self.pr
-        PrintPR(pr, self.repo).print_output()
+        PrintPR(self.pr, self.repo, detailed_mode, self.labels).print_output()
 
 
 class RepoDash(object):
@@ -116,7 +115,7 @@ class RepoDash(object):
         assert ghub is None and (repo is not None or user_or_token is not None), "User ID or Token must be provided."
         assert repo or repo_url, "Repo object or Repo url must be provided."
         if not repo:
-            self.ghub = ghub and ghub or github.Github(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
+            self.ghub = ghub and ghub or github.Github(user_or_token, password, base_url=settings.PRBOARD_BASE_URL)
         self.repo = repo and repo or ghub.get_repo(repo_url)
         self.pr_filter = pr_filter
         self.cmd = cmd
@@ -147,6 +146,7 @@ class RepoDash(object):
         """
         for pr in self.prs:
             if self.cmd:
+                print ""
                 pr.print_dash(detailed_mode)
             else:
                 return pr.dash(detailed_mode)
@@ -200,6 +200,7 @@ class OrgUserDashBoard(object):
 
     def dash(self):
         for repo in self.repos:
+            print_header("Repo: {} {}".format(repo.name, repo.html_url))
             RepoDash(repo=repo, pr_filter=self.pr_filter, state=self.state, cmd=self.cmd).produce_dash(self.detailed_mode)
 
 
@@ -207,14 +208,14 @@ class DashBoard(object):
     """
 
     """
-    def __init__(self, user_or_token=settings.DEFAULT_GITHUB_USERNAME, password=settings.DEFAULT_GITHUB_PASSWORD, repo_filter=None,
+    def __init__(self, user_or_token=settings.PRBOARD_GITHUB_USERNAME, password=settings.PRBOARD_GITHUB_PASSWORD, repo_filter=None,
                  pr_filter=None, state=NotSet, cmd=True, **kwargs):
         """
 
         """
         assert user_or_token is not None, "User ID or access token must be provided"
-        # self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
-        self.ghub = Github(user_or_token, password, base_url=settings.DEFAULT_BASE_URL)
+        # self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.PRBOARD_BASE_URL)
+        self.ghub = Github(user_or_token, password, base_url=settings.PRBOARD_BASE_URL)
         user = self.ghub.get_user().login
         self.repo_filter = repo_filter
         self.pr_filter = pr_filter
@@ -229,8 +230,10 @@ class DashBoard(object):
         if orgs:
             if isinstance(orgs, (list, tuple)):
                 for org in orgs:
+                    print_header("Organization: {}".format(org))
                     OrgUserDashBoard(dashboard=self, org=org).dash()
             else:
+                print_header("Organization: {}".format(orgs))
                 OrgUserDashBoard(dashboard=self, org=orgs).dash()
         else:
             OrgUserDashBoard(dashboard=self).dash()
