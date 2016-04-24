@@ -8,6 +8,9 @@ prboard Command line Git PR dashboard
    :target: https://landscape.io/github/kumarvaradarajulu/prboard/master
    :alt: Code Health
 
+.. image:: https://coveralls.io/repos/github/kumarvaradarajulu/prboard/badge.svg?branch=master
+    :target: https://coveralls.io/github/kumarvaradarajulu/prboard?branch=master
+
 Help
 ----
 usage:  [-h] [-b BASEURL] [-o ORG] [-r REPOS] [-s STATUS] [-u USERNAME]
