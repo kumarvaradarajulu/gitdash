@@ -1,7 +1,5 @@
 import os
 
-from utils import parse_pr_filters
-
 PRBOARD_BASE_URL = "https://api.github.com"
 PRBOARD_PR_FILTER = ""
 PRBOARD_REPO_FILTER = ""
@@ -11,7 +9,7 @@ PRBOARD_GITHUB_PASSWORD = os.environ.get("PRBOARD_GITHUB_PASSWORD", "")
 PRBOARD_DETALED_MODE = True
 
 PRBOARD_REPOS = PRBOARD_PR_FILTER.split(",")
-PRBOARD_PR = parse_pr_filters(PRBOARD_PR_FILTER)
+PRBOARD_PR = []
 
 # Default Organization
 PRBOARD_ORG = PRBOARD_ORG_FILTER.split(",")
