@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser('')
 parser.add_argument(
     "-b", "--baseurl",
     default=settings.PRBOARD_ORG,
-    dest="org",
+    dest="baseurl",
     type=six.text_type,
     help="Github base url to be used."
 )
@@ -119,6 +119,8 @@ parser.add_argument('-V', '--version', action='version', version='%(prog)s v' + 
 def main():
     args = parser.parse_args()
     kwargs = {}
+    if args.baseurl:
+        kwargs['baseurl'] = args.baseurl
     if args.username:
         kwargs['user_or_token'] = args.username
     if args.repouser:

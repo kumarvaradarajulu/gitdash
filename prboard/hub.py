@@ -163,7 +163,6 @@ class OrgUserDashBoard(object):
         assert dashboard
         self.ghub = dashboard.ghub
         self.dashboard = dashboard
-        user = self.ghub.get_user().login
         self.repo_filter = dashboard.repo_filter
         self.pr_filter = dashboard.pr_filter
         self.state = dashboard.state
@@ -208,15 +207,15 @@ class DashBoard(object):
     """
 
     """
-    def __init__(self, user_or_token=settings.PRBOARD_GITHUB_USERNAME, password=settings.PRBOARD_GITHUB_PASSWORD, repo_filter=None,
+    def __init__(self, user_or_token=settings.PRBOARD_GITHUB_USERNAME, password=settings.PRBOARD_GITHUB_PASSWORD,
+                 base_url=settings.PRBOARD_BASE_URL, repo_filter=None,
                  pr_filter=None, state=NotSet, cmd=True, **kwargs):
         """
 
         """
         assert user_or_token is not None, "User ID or access token must be provided"
         # self.ghub = ExtendedGithub(user_or_token, password, base_url=settings.PRBOARD_BASE_URL)
-        self.ghub = Github(user_or_token, password, base_url=settings.PRBOARD_BASE_URL)
-        user = self.ghub.get_user().login
+        self.ghub = Github(user_or_token, password, base_url=base_url)
         self.repo_filter = repo_filter
         self.pr_filter = pr_filter
         self.state = state
