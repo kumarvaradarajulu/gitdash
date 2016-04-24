@@ -35,7 +35,7 @@ class TestGithub(unittest.TestCase):
         repos = g.get_user_repos("kumar")
         # Cannot use assert_called_once_with as the requester object gets an instance
         self.assertEqual(mock_paginated_list.call_args[0][0], github.Repository.Repository)
-        self.assertEqual(mock_paginated_list.call_args[0][2], "/users/{}/repos".format("kumar"))
+        self.assertEqual(mock_paginated_list.call_args[0][2], "/users/{0}/repos".format("kumar"))
         self.assertEqual(repos, data)
 
     @mock.patch.object(github.PaginatedList, "PaginatedList")
@@ -48,5 +48,5 @@ class TestGithub(unittest.TestCase):
         repos = g.get_org_repos("kumar")
         # Cannot use assert_called_once_with as the requester object gets an instance
         self.assertEqual(mock_paginated_list.call_args[0][0], github.Repository.Repository)
-        self.assertEqual(mock_paginated_list.call_args[0][2], "orgs/{}/repositories".format("kumar"))
+        self.assertEqual(mock_paginated_list.call_args[0][2], "orgs/{0}/repositories".format("kumar"))
         self.assertEqual(repos, data)

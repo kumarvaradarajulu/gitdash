@@ -42,7 +42,7 @@ class Github(github.Github):
         return github.PaginatedList.PaginatedList(
             github.Repository.Repository,
             self.__requester,
-            "/users/{}/repos".format(user),
+            "/users/{0}/repos".format(user),
             url_parameters
         )
 
@@ -61,7 +61,7 @@ class Github(github.Github):
         return github.PaginatedList.PaginatedList(
             github.Repository.Repository,
             self.__requester,
-            "orgs/{}/repositories".format(org),
+            "orgs/{0}/repositories".format(org),
             url_parameters
         )
 
@@ -200,7 +200,7 @@ class OrgUserDashBoard(object):
 
     def dash(self):
         for repo in self.repos:
-            print_header("Repo: {} {}".format(repo.name, repo.html_url))
+            print_header("Repo: {0} {1}".format(repo.name, repo.html_url))
             RepoDash(repo=repo, pr_filter=self.pr_filter, state=self.state, cmd=self.cmd).produce_dash(self.detailed_mode)
 
 
@@ -230,10 +230,10 @@ class DashBoard(object):
         if orgs:
             if isinstance(orgs, (list, tuple)):
                 for org in orgs:
-                    print_header("Organization: {}".format(org))
+                    print_header("Organization: {0}".format(org))
                     OrgUserDashBoard(dashboard=self, org=org).dash()
             else:
-                print_header("Organization: {}".format(orgs))
+                print_header("Organization: {0}".format(orgs))
                 OrgUserDashBoard(dashboard=self, org=orgs).dash()
         else:
             OrgUserDashBoard(dashboard=self).dash()

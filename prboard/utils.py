@@ -57,7 +57,7 @@ def overload_settings_from_file():
                     continue
     except IOError as e:
         # Log any IO errors
-        log.warning("Unable to access settings file={}, error={}".format(settings.PRBOARD_SETTINGS_FILE, e.message))
+        log.warning("Unable to access settings file={0}, error={1}".format(settings.PRBOARD_SETTINGS_FILE, e.message))
 
 
 class PrintPR(object):
@@ -82,17 +82,17 @@ class PrintPR(object):
 
     def print_summary(self):
         colors = constants.Colors
-        print colors.BOLD + str(self.prnum).ljust(6) + ' ' + self.title[:50].ljust(50) + ' ' + colors.FAIL + str(self.comments) + ' comment(s) {}'.format(self.html_url) + colors.ENDC + self.html_url
+        print colors.BOLD + str(self.prnum).ljust(6) + ' ' + self.title[:50].ljust(50) + ' ' + colors.FAIL + str(self.comments) + ' comment(s) {0}'.format(self.html_url) + colors.ENDC + self.html_url
 
     def print_detailed_output(self):
         hindent = 4
         bindent = 11
-        pr_header = "{} {} (mile={},assigne={},lables={}) {}".format(str(self.prnum).ljust(6), self.title[:100], self.milestone, self.assignee, self.labels, self.html_url)
+        pr_header = "{0} {1} (mile={2},assigne={3},lables={4}) {5}".format(str(self.prnum).ljust(6), self.title[:100], self.milestone, self.assignee, self.labels, self.html_url)
         print_header(pr_header, sep="", indent=hindent)
         if self.comments:
             for comment in self.pr.get_issue_comments():
-                prefix = bindent*" " + colors.BOLD + '{}@@{}:::'.format(comment.user.login, str(comment.updated_at)).ljust(40) + colors.ENDC
-                print prefix + comment.body + ' {}'.format(comment.html_url)
+                prefix = bindent*" " + colors.BOLD + '{0}@@{1}:::'.format(comment.user.login, str(comment.updated_at)).ljust(40) + colors.ENDC
+                print prefix + comment.body + ' {0}'.format(comment.html_url)
         else:
             print bindent*" " + "No comments"
 
