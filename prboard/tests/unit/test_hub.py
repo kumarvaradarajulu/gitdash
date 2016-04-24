@@ -22,8 +22,7 @@ class TestGithub(unittest.TestCase):
     def test_github_get_user_repos_raises_assert_error(self, mock_paginated_list):
         """ Test if Github.get_user_repos raises assertion error if since is not a valid value """
         g = hub.Github()
-        with self.assertRaises(AssertionError):
-            g.get_user_repos("kumar", "a")
+        self.assertRaises(AssertionError, g.get_user_repos, "kumar", "a")
 
     @mock.patch.object(github.PaginatedList, "PaginatedList")
     def test_github_get_user_repos_pass(self, mock_paginated_list):

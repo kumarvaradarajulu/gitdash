@@ -33,8 +33,8 @@ class TestBaseFilter(BaseFilterTest):
         Call to filter_on should raise NotImplemented error
         """
         bf = filters.BaseFilter(**self.kwargs)
-        with self.assertRaises(NotImplementedError):
-            bf.filter_on()
+        # Python 2.6 support
+        self.assertRaises(NotImplementedError, getattr, bf, "filter_on")
 
     @mock.PropertyMock(filters.BaseFilter.filter_on)
     def test___call__(self, mock_filter_on):
