@@ -13,11 +13,11 @@ prboard Command line Git PR dashboard
 
 Help
 ----
-::
-usage:  [-h] [-b BASEURL] [-o ORG] [-r REPOS] [-s STATUS] [-u USERNAME]
+**usage:**  [-h] [-b BASEURL] [-o ORG] [-r REPOS] [-s STATUS] [-u USERNAME]
         [-ru REPOUSER] [-p PASSWORD] [-pr PULL] [-d DETAILED_MODE] [-v] [-V]
 
 optional arguments:
+___________________
   -h, --help            show this help message and exit
   -b BASEURL, --baseurl BASEURL
                         Github base url to be used.
@@ -33,23 +33,9 @@ optional arguments:
   -u USERNAME, --user USERNAME
                         User name to login to Github. Default is picked from
                         settings.DEFAULT_GITHUB_USER
-  -ru REPOUSER, --repouser REPOUSER
-                        User name on Github for which the dashboard must be
-                        checked. Login user name is different from checking
-                        user name. For instance you may want to check PRs on
-                        your colleague's Github account, but login with yours.
-                        This parameter is to provide your colleague's user
-                        name
   -p PASSWORD, --password PASSWORD
                         Password to login to Github. Default is picked from
                         settings.PRBOARD_GITHUB_PASSWORD
-  -pr PULL, --pull PULL
-                        Filter Pull requests, with the following criteriaBy PR
-                        Number ----> num:123By PR Labels ---->
-                        labels:label1;label2;label3By PR Title ---->
-                        title:pr_title (wilcard match)By PR Title ---->
-                        etitle:pr_title (exact match)By PR All ---->
-                        num:123,labels:label1;label2;label3,title:pr_title
   -d DETAILED_MODE, --detailed_mode DETAILED_MODE
                         Option to control output mode. If Detailed mode is set
                         each PR and it's comments is displayed
@@ -57,4 +43,17 @@ optional arguments:
                         times to increase verbosity level
   -V, --version         To know prboard version number
 
-::
+  -ru REPOUSER, --repouser REPOUSER
+                        User name on Github for which the dashboard must be
+                        checked. Login user name is different from checking
+                        user name. For instance you may want to check PRs on
+                        your colleague's Github account, but login with yours.
+                        This parameter is to provide your colleague's user
+                        name
+  -pr PULL, --pull PULL
+                        Filter Pull requests, with the following criteriaBy PR
+                        Number ----> num:123By PR Labels ---->
+                        labels:label1;label2;label3By PR Title ---->
+                        title:pr_title (wilcard match)By PR Title ---->
+                        etitle:pr_title (exact match)By PR All ---->
+                        num:123,labels:label1;label2;label3,title:pr_title
