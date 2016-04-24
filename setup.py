@@ -23,7 +23,6 @@ setup(
     package_data={'prboard': ['README.rst']},
     zip_safe=False,
     install_requires=[
-        'prboard',
         'argparse',
         'PyGithub',
         'six',
