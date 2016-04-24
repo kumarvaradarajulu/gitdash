@@ -13,6 +13,7 @@ prboard Command line Git PR dashboard
 
 Help
 ----
+::
 usage:  [-h] [-b BASEURL] [-o ORG] [-r REPOS] [-s STATUS] [-u USERNAME]
         [-ru REPOUSER] [-p PASSWORD] [-pr PULL] [-d DETAILED_MODE] [-v] [-V]
 
@@ -55,3 +56,5 @@ optional arguments:
   -v, --verbose         Control verbosity level. Can be supplied multiple
                         times to increase verbosity level
   -V, --version         To know prboard version number
+
+::
