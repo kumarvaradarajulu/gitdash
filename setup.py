@@ -14,14 +14,13 @@ setup(
     author="Kumar Varadarajulu",
     author_email="kumarvaradarajulu@gmail.com",
     description=prboard.__description__,
-    long_description='\n' + read('README.md'),
+    long_description='\n' + read('README.rst'),
     download_url=(
-        'https://github.com/kumarvaradarajulu/prboard/tag/v'
-        + prboard.__version__
+        'https://github.com/kumarvaradarajulu/prboard/tag/v' + prboard.__version__
     ),
     include_package_data=True,
     packages=find_packages(),
-    package_data={'prboard': ['README.md']},
+    package_data={'prboard': ['README.rst']},
     zip_safe=False,
     install_requires=[
         'prboard',
@@ -29,6 +28,8 @@ setup(
         'PyGithub',
         'six',
         'mock',
+        'coverage',
+        'nose',
     ],
     entry_points={
         'console_scripts': [
