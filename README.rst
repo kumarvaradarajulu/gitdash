@@ -51,9 +51,9 @@ ___________________
                         This parameter is to provide your colleague's user
                         name
   -pr PULL, --pull PULL
-                        Filter Pull requests, with the following criteriaBy PR
-                        Number ----> num:123By PR Labels ---->
-                        labels:label1;label2;label3By PR Title ---->
-                        title:pr_title (wilcard match)By PR Title ---->
-                        etitle:pr_title (exact match)By PR All ---->
-                        num:123,labels:label1;label2;label3,title:pr_title
+                        | Filter Pull requests, with the following criteriaBy PR
+                        | Number ----> num:123By PR Labels ---->
+                        | labels:label1;label2;label3By PR Title ---->
+                        | title:pr_title (wilcard match)By PR Title ---->
+                        | etitle:pr_title (exact match)By PR All ---->
+                        | num:123,labels:label1;label2;label3,title:pr_title
